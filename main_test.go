@@ -78,7 +78,7 @@ func TestGetNonExistentProduct(t *testing.T) {
 func TestCreateProduct(t *testing.T) {
 	clearTable()
 
-	jsonStr := []byte(`{"name":"test product", "price": 11.22}`)
+	jsonStr := []byte(`{"name":"test product", "price": 11.22, "stock": 10}`)
 	req, _ := http.NewRequest("POST", "/product", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -122,7 +122,7 @@ func TestUpdateProduct(t *testing.T) {
 	var originalProduct map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &originalProduct)
 
-	jsonStr := []byte(`{"name":"test product - updated name", "price": 11.22}`)
+	jsonStr := []byte(`{"name":"test product - updated name", "price": 11.22, "stock": 10}`)
 	req, _ = http.NewRequest("PUT", "/product/1", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 

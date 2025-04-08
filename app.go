@@ -37,6 +37,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.getProduct).Methods("GET")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.updateProduct).Methods("PUT")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.deleteProduct).Methods("DELETE")
+	a.Router.HandleFunc("/product/{id:[0-9]+}/buy", a.buyProduct).Methods("PUT")
 }
 
 func (a *App) Run(addr string) {
@@ -119,6 +120,40 @@ func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	p.ID = id
+
+	if err := p.updateProduct(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, p)
+}
+
+func (a *App) buyProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Product ID")
+		return
+	}
+
+	p := product{ID: id}
+	if err := p.getProduct(a.DB); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			respondWithError(w, http.StatusNotFound, "Product not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	if p.Stock == 0 {
+		respondWithError(w, http.StatusBadRequest, "Product is out of stock")
+		return
+	}
+
+	p.Stock--
 
 	if err := p.updateProduct(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
