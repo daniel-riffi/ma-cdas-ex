@@ -34,10 +34,11 @@ func (a *App) Initialize(user, password, dbname string) {
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/products", a.getProducts).Methods("GET")
 	a.Router.HandleFunc("/product", a.createProduct).Methods("POST")
-	a.Router.HandleFunc("/product/{id:[0-9]+}", a.getProduct).Methods("GET")
-	a.Router.HandleFunc("/product/{id:[0-9]+}", a.updateProduct).Methods("PUT")
-	a.Router.HandleFunc("/product/{id:[0-9]+}", a.deleteProduct).Methods("DELETE")
-	a.Router.HandleFunc("/product/{id:[0-9]+}/buy", a.buyProduct).Methods("PUT")
+	productEndpoint := "/product/{id:[0-9]+}"
+	a.Router.HandleFunc(productEndpoint, a.getProduct).Methods("GET")
+	a.Router.HandleFunc(productEndpoint, a.updateProduct).Methods("PUT")
+	a.Router.HandleFunc(productEndpoint, a.deleteProduct).Methods("DELETE")
+	a.Router.HandleFunc(fmt.Sprintf("%s/buy", productEndpoint), a.buyProduct).Methods("PUT")
 }
 
 func (a *App) Run(addr string) {
