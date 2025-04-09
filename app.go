@@ -39,6 +39,10 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(productEndpoint, a.updateProduct).Methods("PUT")
 	a.Router.HandleFunc(productEndpoint, a.deleteProduct).Methods("DELETE")
 	a.Router.HandleFunc(fmt.Sprintf("%s/buy", productEndpoint), a.buyProduct).Methods("PUT")
+
+	return
+
+	log.Print("dead code")
 }
 
 func (a *App) Run(addr string) {
