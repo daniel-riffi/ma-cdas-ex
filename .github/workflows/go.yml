@@ -51,6 +51,18 @@ jobs:
     - name: Test
       run: go test -v ./...
 
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+
+    - name: Build and push Docker image
+      run: |
+        docker build -f Dockerfile danielriffi/cdas-ex:latest ./
+        GIT_SHA="$(git rev-parse --short HEAD)"
+        docker tag danielriffi/cdas-ex:latest danielriffi/cdas-ex:$GIT_SHA
+        docker push danielriffi/cdas-ex:latest
+        docker push danielriffi/cdas-ex:$GIT_SHA
+
   sonarqube:
     needs: build
     runs-on: ubuntu-latest
