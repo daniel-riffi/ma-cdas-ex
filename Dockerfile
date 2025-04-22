@@ -6,6 +6,7 @@ WORKDIR /src
 
 COPY *.go go.mod /src
 
+RUN go mod tidy
 RUN go build -o app && mv app /usr/
 
 EXPOSE 8010
