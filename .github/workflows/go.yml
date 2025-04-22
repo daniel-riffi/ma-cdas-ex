@@ -10,6 +10,8 @@ on:
     branches: [ "master" ]
 
 env:
+  APP_DB_HOST: localhost
+  APP_DB_PORT: 5432
   APP_DB_USERNAME: postgres
   APP_DB_PASSWORD: 123456789
   APP_DB_NAME: postgres
