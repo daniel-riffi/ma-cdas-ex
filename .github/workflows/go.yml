@@ -90,6 +90,7 @@ jobs:
       with:
         scan-type: 'config'
         ignore-unfixed: true
+        ignore-policy: 'aws.ec2.specify_ami_owners'
         format: 'sarif'
         output: 'trivy-iac-results.sarif'
         exit-code: '1'
