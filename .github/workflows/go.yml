@@ -61,14 +61,12 @@ jobs:
       id: vars
       run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-    - name: Build and push Docker image
+    - name: Build Docker image
       run: |
         docker build -f Dockerfile -t danielriffi/cdas-ex:latest ./
         docker tag danielriffi/cdas-ex:latest danielriffi/cdas-ex:${{ env.GIT_SHA }}
-        docker push danielriffi/cdas-ex:latest
-        docker push danielriffi/cdas-ex:${{ env.GIT_SHA }}
 
-    - name: Run Trivy vulnerability scanner
+    - name: Run Trivy vulnerability scanner in image mode
       uses: aquasecurity/trivy-action@0.28.0
       with:
         image-ref: "docker.io/danielriffi/cdas-ex:${{ env.GIT_SHA }}"
@@ -92,21 +90,26 @@ jobs:
       with:
         scan-type: 'config'
         hide-progress: true
-        format: 'sarif'
-        output: 'trivy-iac-results.sarif'
+        format: 'table'
+        # output: 'trivy-iac-results.sarif'
         exit-code: '1'
         severity: 'CRITICAL'
 
+    - name: Push Docker image
+      run: |
+        docker push danielriffi/cdas-ex:latest
+        docker push danielriffi/cdas-ex:${{ env.GIT_SHA }}
 
-    - name: Upload Trivy FS scan results
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: trivy-fs-results.sarif
 
-    - name: Upload Trivy IaC scan results
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: trivy-iac-results.sarif
+    # - name: Upload Trivy FS scan results
+    #   uses: github/codeql-action/upload-sarif@v2
+    #   with:
+    #     sarif_file: trivy-fs-results.sarif
+    #
+    # - name: Upload Trivy IaC scan results
+    #   uses: github/codeql-action/upload-sarif@v2
+    #   with:
+    #     sarif_file: trivy-iac-results.sarif
 
   sonarqube:
     needs: build
