@@ -83,14 +83,14 @@ jobs:
         ignore-unfixed: true
         format: 'sarif'
         output: 'trivy-fs-results.sarif'
+        exit-code: '1'
         severity: 'CRITICAL'
 
     - name: Run Trivy vulnerability scanner in IaC mode
-      uses: aquasecurity/trivy-action@0.30.0
+      uses: aquasecurity/trivy-action@0.28.0
       with:
         scan-type: 'config'
         ignore-unfixed: true
-        ignore-policy: 'aws.ec2.specify_ami_owners'
         format: 'sarif'
         output: 'trivy-iac-results.sarif'
         exit-code: '1'
