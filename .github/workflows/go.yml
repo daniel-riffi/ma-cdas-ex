@@ -57,17 +57,21 @@ jobs:
     - name: Log in to Docker Hub
       run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
+    - name: Get short SHA
+      id: vars
+      run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
     - name: Build and push Docker image
       run: |
         docker build -f Dockerfile -t danielriffi/cdas-ex:latest ./
-        docker tag danielriffi/cdas-ex:latest danielriffi/cdas-ex:${{ github.sha }}
+        docker tag danielriffi/cdas-ex:latest danielriffi/cdas-ex:${{ env.GIT_SHA }}
         docker push danielriffi/cdas-ex:latest
-        docker push danielriffi/cdas-ex:${{ github.sha }}
+        docker push danielriffi/cdas-ex:${{ env.GIT_SHA }}
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: 'docker.io/danielriffi/cdas-ex:${{ github.sha }}'
+        image-ref: "docker.io/my-organization/my-app:${{ env.GIT_SHA }}"
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
