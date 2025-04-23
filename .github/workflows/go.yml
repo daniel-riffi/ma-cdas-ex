@@ -90,8 +90,9 @@ jobs:
       with:
         scan-type: 'config'
         hide-progress: true
-        format: 'table'
-        # output: 'trivy-iac-results.sarif'
+        format: 'sarif'
+        continue-on-error: true
+        output: 'trivy-iac-results.sarif'
         exit-code: '1'
         severity: 'CRITICAL'
 
