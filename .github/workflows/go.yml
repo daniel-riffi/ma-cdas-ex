@@ -78,6 +78,16 @@ jobs:
         vuln-type: 'os,library'
         severity: 'CRITICAL'
 
+    - name: Run Trivy vulnerability scanner in IaC mode
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        scan-type: 'config'
+        hide-progress: true
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        exit-code: '1'
+        severity: 'CRITICAL'
+
   sonarqube:
     needs: build
     runs-on: ubuntu-latest
