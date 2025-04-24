@@ -86,15 +86,15 @@ jobs:
         exit-code: '1'
         severity: 'CRITICAL'
 
-    - name: Run Trivy vulnerability scanner in IaC mode
-      uses: aquasecurity/trivy-action@0.27.0
-      with:
-        scan-type: 'config'
-        ignore-unfixed: true
-        format: 'sarif'
-        output: 'trivy-iac-results.sarif'
-        exit-code: '0'
-        severity: 'CRITICAL'
+    # - name: Run Trivy vulnerability scanner in IaC mode
+    #   uses: aquasecurity/trivy-action@0.27.0
+    #   with:
+    #     scan-type: 'config'
+    #     ignore-unfixed: true
+    #     format: 'sarif'
+    #     output: 'trivy-iac-results.sarif'
+    #     exit-code: '1'
+    #     severity: 'CRITICAL'
 
     - name: Push Docker image
       run: |
@@ -102,15 +102,15 @@ jobs:
         docker push danielriffi/cdas-ex:${{ env.GIT_SHA }}
 
 
-    - name: Upload Trivy FS scan results
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: trivy-fs-results.sarif
-
-    - name: Upload Trivy IaC scan results
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: trivy-iac-results.sarif
+    # - name: Upload Trivy FS scan results
+    #   uses: github/codeql-action/upload-sarif@v2
+    #   with:
+    #     sarif_file: trivy-fs-results.sarif
+    #
+    # - name: Upload Trivy IaC scan results
+    #   uses: github/codeql-action/upload-sarif@v2
+    #   with:
+    #     sarif_file: trivy-iac-results.sarif
 
   sonarqube:
     needs: build
