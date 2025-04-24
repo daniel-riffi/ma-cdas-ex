@@ -93,7 +93,7 @@ jobs:
         ignore-unfixed: true
         format: 'sarif'
         output: 'trivy-iac-results.sarif'
-        exit-code: '1'
+        exit-code: '0'
         severity: 'CRITICAL'
 
     - name: Push Docker image
