@@ -53,10 +53,6 @@ jobs:
     - name: Test
       run: go test -v ./...
 
-
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u "${{ secrets.REGISTRY_USER }}" --password-stdin
-
     - name: Get short SHA
       id: vars
       run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -66,7 +62,7 @@ jobs:
         docker build -f Dockerfile -t danielriffi/cdas-ex:latest ./
         docker tag danielriffi/cdas-ex:latest danielriffi/cdas-ex:${{ env.GIT_SHA }}
 
-    - name: Run Trivy vulnerability scanner in image mode
+    - name: Run Trivy to scan Docker image
       uses: aquasecurity/trivy-action@0.28.0
       with:
         image-ref: "docker.io/danielriffi/cdas-ex:${{ env.GIT_SHA }}"
@@ -76,41 +72,23 @@ jobs:
         vuln-type: 'os,library'
         severity: 'CRITICAL'
 
-    - name: Run Trivy vulnerability scanner in repo mode
-      uses: aquasecurity/trivy-action@0.28.0
+    - name: Run Trivy to scan code & IaC
+      uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
-        ignore-unfixed: true
-        format: 'sarif'
-        output: 'trivy-fs-results.sarif'
+        format: 'table'
         exit-code: '1'
+        ignore-unfixed: true
         severity: 'CRITICAL'
+        scan-ref: '.'
 
-    # - name: Run Trivy vulnerability scanner in IaC mode
-    #   uses: aquasecurity/trivy-action@0.27.0
-    #   with:
-    #     scan-type: 'config'
-    #     ignore-unfixed: true
-    #     format: 'sarif'
-    #     output: 'trivy-iac-results.sarif'
-    #     exit-code: '1'
-    #     severity: 'CRITICAL'
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
     - name: Push Docker image
       run: |
         docker push danielriffi/cdas-ex:latest
         docker push danielriffi/cdas-ex:${{ env.GIT_SHA }}
-
-
-    # - name: Upload Trivy FS scan results
-    #   uses: github/codeql-action/upload-sarif@v2
-    #   with:
-    #     sarif_file: trivy-fs-results.sarif
-    #
-    # - name: Upload Trivy IaC scan results
-    #   uses: github/codeql-action/upload-sarif@v2
-    #   with:
-    #     sarif_file: trivy-iac-results.sarif
 
   sonarqube:
     needs: build
